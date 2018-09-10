@@ -1,6 +1,9 @@
 require 'oystercard'
 
 describe Oystercard do
+
+  let (:station){ double :station }
+
   it { is_expected.to have_attributes(:balance => 0) }
 
   it { should respond_to(:top_up).with(1).argument  }
@@ -24,45 +27,56 @@ describe Oystercard do
   #   expect(oystercard.deduct).to eq(10 - fare)
   # end
 
-  it "Should confirm passenger is in journey" do
+  xit "Should confirm passenger is in journey" do
     oystercard = Oystercard.new
     oystercard.top_up(10)
-    oystercard.touch_in
-    expect(oystercard.status).to be true
+    oystercard.touch_in(station)
+    expect(oystercard.in_journey?).to be true
   end
 
-  it "Should touch in at journey beginning" do
+  xit "Should touch in at journey beginning" do
     fare = Oystercard::FARE
     oystercard = Oystercard.new
     oystercard.top_up(10)
-    oystercard.touch_in
-    expect(oystercard.status).to be true
+    oystercard.touch_in(station)
+    expect(oystercard.in_journey?).to be true
   end
 
   it "Should touch out at journey end" do
     oystercard = Oystercard.new
     oystercard.top_up(10)
-    oystercard.touch_in
+    oystercard.touch_in(station)
     oystercard.touch_out
-    expect(oystercard.status).to be false
+    expect(oystercard.in_journey?).to be nil
   end
 
   it 'should prevent travelling with balance less than £1' do
     fare = Oystercard::FARE
     balance = Oystercard::BALANCE
     oystercard = Oystercard.new
-    expect { oystercard.touch_in }.to raise_error("Not enough money on card! Your balance is £#{balance}")
+    expect { oystercard.touch_in(station) }.to raise_error("Not enough money on card! Your balance is £#{balance}")
   end
 
   it 'should deduct fare upon touch out' do
     fare = Oystercard::FARE
     oystercard = Oystercard.new
     oystercard.top_up(10)
-    oystercard.touch_in
+    oystercard.touch_in(station)
     expect{oystercard.touch_out}.to change{oystercard.balance}.by(-fare)
-
   end
 
-  # expect(oystercard.balance).to eq(10 - fare)
+ it 'Remembers the entry station upon touch in' do
+  oystercard = Oystercard.new
+  oystercard.top_up(10)
+  oystercard.touch_in(station)
+  expect(oystercard.entry_station).to eq(station)
+end
 
+it 'should set entry_station to nil upon touch out' do
+  oystercard = Oystercard.new
+  oystercard.top_up(10)
+  oystercard.touch_in(station)
+  oystercard.touch_out
+  expect(oystercard.entry_station).to eq(nil)
+end
 end
