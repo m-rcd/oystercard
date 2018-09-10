@@ -17,10 +17,6 @@ class Oystercard
     @balance += top_up_value
   end
 
-  def deduct
-    @balance -= FARE
-  end
-
   def in_journey?
     @status
   end
@@ -32,11 +28,16 @@ class Oystercard
   def touch_in
     fail "Not enough money on card! Your balance is £#{@balance}" if balance < FARE
     @status = true
-    deduct
   end
 
   def touch_out
     @status = false
+    deduct
+  end
+
+  private
+  def deduct
+    @balance -= FARE
   end
 
 end
