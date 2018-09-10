@@ -17,12 +17,12 @@ describe Oystercard do
     expect { oystercard.top_up 1 }.to raise_error("Card has reached its £#{max_balance} limit!")
   end
 
-  it "Deducts the fare from the balance" do
-    fare = Oystercard::FARE
-    oystercard = Oystercard.new
-    oystercard.top_up(10)
-    expect(oystercard.deduct).to eq(10 - fare)
-  end
+  # it "Deducts the fare from the balance" do
+  #   fare = Oystercard::FARE
+  #   oystercard = Oystercard.new
+  #   oystercard.top_up(10)
+  #   expect(oystercard.deduct).to eq(10 - fare)
+  # end
 
   it "Should confirm passenger is in journey" do
     oystercard = Oystercard.new
@@ -37,7 +37,6 @@ describe Oystercard do
     oystercard.top_up(10)
     oystercard.touch_in
     expect(oystercard.status).to be true
-    expect(oystercard.balance).to eq(10 - fare)
   end
 
   it "Should touch out at journey end" do
@@ -54,5 +53,16 @@ describe Oystercard do
     oystercard = Oystercard.new
     expect { oystercard.touch_in }.to raise_error("Not enough money on card! Your balance is £#{balance}")
   end
+
+  it 'should deduct fare upon touch out' do
+    fare = Oystercard::FARE
+    oystercard = Oystercard.new
+    oystercard.top_up(10)
+    oystercard.touch_in
+    expect{oystercard.touch_out}.to change{oystercard.balance}.by(-fare)
+
+  end
+
+  # expect(oystercard.balance).to eq(10 - fare)
 
 end
