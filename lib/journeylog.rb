@@ -16,6 +16,6 @@ class JourneyLog
   end
 
   def store_journey
-    @history_log << {entry: entry_point, exit: exit_point, price: journey.calculate_fare}
+    @history_log << {entry: entry_point, exit: exit_point, price: journey.calculate_fare(entry_point, exit_point)}
   end
 end

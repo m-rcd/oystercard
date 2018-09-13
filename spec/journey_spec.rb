@@ -13,7 +13,7 @@ describe Journey do
 
     it 'PASS - normal fare' do
 
-      expect(journey.calculate_fare(entry_station, exit_station)).to eq 1
+      expect(journey.calculate_fare(exit_station.zone, entry_station.zone)).to eq 2
     end
   end
 end
