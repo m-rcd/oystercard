@@ -2,13 +2,13 @@ class Oystercard
     BALANCE = 0
     MAX_BALANCE = 90
     FARE = 1
-    attr_reader :balance, :entry_station, :journey_log, :journey
+    attr_reader :balance, :entry_station, :journeylog, :journey
 
-  def initialize(balance = BALANCE, journey = Journey.new)
+  def initialize(balance = BALANCE, journey = Journey.new, journeylog = JourneyLog.new)
     @balance = balance
     @max_balance = MAX_BALANCE
-    @journey_log = []
     @journey = journey
+    @journeylog = journeylog
   end
 
   def top_up(top_up_value)
@@ -18,19 +18,17 @@ class Oystercard
 
   def touch_in(station)
     fail "Not enough money on card! Your balance is £#{@balance}" if balance < FARE
-    journey.start_journey(station)
+    journeylog.start_tracking(station)
   end
 
   def touch_out(station)
-    @journey_log << {entry: journey.entry_point, exit: station}
-    journey.end_journey(station)  
+    journeylog.stop_tracking(station)
     deduct(journey.calculate_fare)
   end
 
   private
 
   def deduct(amount)
-
     @balance -= amount
   end
 end
