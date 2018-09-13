@@ -2,12 +2,11 @@ class Oystercard
     BALANCE = 0
     MAX_BALANCE = 90
     FARE = 1
-    attr_reader :balance, :entry_station, :journeylog, :journey
+    attr_reader :balance, :journeylog
 
-  def initialize(balance = BALANCE, journey = Journey.new, journeylog = JourneyLog.new)
+  def initialize(balance = BALANCE, journeylog = JourneyLog.new)
     @balance = balance
     @max_balance = MAX_BALANCE
-    @journey = journey
     @journeylog = journeylog
   end
 
@@ -23,7 +22,8 @@ class Oystercard
 
   def touch_out(station)
     journeylog.stop_tracking(station)
-    deduct(journey.calculate_fare)
+    journeylog.store_journey
+    deduct(journeylog.process_fare)
   end
 
   private

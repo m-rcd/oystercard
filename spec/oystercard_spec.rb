@@ -1,11 +1,11 @@
 require 'oystercard'
 
 describe Oystercard do
-  let(:oystercard) { described_class.new(0, journey, journeylog)}
+  let(:oystercard) { described_class.new(0, journeylog)}
   let(:entry_station) { double('a station', name: 'Aldgate East', zone: 1) }
   let(:exit_station) { double('another station', name: 'Bow road', zone: 2)}
   let(:journey) { double('journey') }
-  let(:journeylog) { double('journeylog', start_tracking: entry_station, stop_tracking: exit_station)}
+  let(:journeylog) { double('journeylog', start_tracking: entry_station, stop_tracking: exit_station )}
 
  context '#top_up' do
    it 'tops up oystercard' do
@@ -42,7 +42,8 @@ end
    it 'should deduct fare upon touch out' do
      oystercard.top_up(10)
      oystercard.touch_in(entry_station)
-     allow(journey).to receive(:calculate_fare) {1}
+     allow(journeylog).to receive(:process_fare) {1}
+     allow(journeylog).to receive(:store_journey)
 
      expect{oystercard.touch_out(exit_station)}.to change{oystercard.balance}.by(-1 )
    end
