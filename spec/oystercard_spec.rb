@@ -2,81 +2,64 @@ require 'oystercard'
 
 describe Oystercard do
 
-  let (:station){ double :station }
+  let (:in_station){ double :station }
+  let (:out_station) { double :station }
+  let(:journey) { double :journey , end_journey: false, start_journey: true}
 
-  it { is_expected.to have_attributes(:balance => 0) }
+ context '#top_up' do
+   it 'tops up oystercard' do
+     oystercard = Oystercard.new
+     oystercard.top_up(2)
 
-  it { should respond_to(:top_up).with(1).argument  }
-  it 'tops up oystercard' do
-    oystercard = Oystercard.new
-    oystercard.top_up(2)
-    expect(oystercard.balance).to eq(2)
-  end
+     expect(oystercard.balance).to eq(2)
+   end
 
-  it "Raises an error when card is full" do
-    max_balance = Oystercard::MAX_BALANCE
-    oystercard = Oystercard.new
-    oystercard.top_up(max_balance)
-    expect { oystercard.top_up 1 }.to raise_error("Card has reached its £#{max_balance} limit!")
-  end
+   it "Raises an error when card is full" do
+     max_balance = Oystercard::MAX_BALANCE
+     oystercard = Oystercard.new
+     oystercard.top_up(max_balance)
 
-  # it "Deducts the fare from the balance" do
-  #   fare = Oystercard::FARE
-  #   oystercard = Oystercard.new
-  #   oystercard.top_up(10)
-  #   expect(oystercard.deduct).to eq(10 - fare)
-  # end
+     expect { oystercard.top_up 1 }.to raise_error("Card has reached its £#{max_balance} limit!")
+   end
+ end
 
-  xit "Should confirm passenger is in journey" do
-    oystercard = Oystercard.new
-    oystercard.top_up(10)
-    oystercard.touch_in(station)
-    expect(oystercard.in_journey?).to be true
-  end
-
-  xit "Should touch in at journey beginning" do
-    fare = Oystercard::FARE
-    oystercard = Oystercard.new
-    oystercard.top_up(10)
-    oystercard.touch_in(station)
-    expect(oystercard.in_journey?).to be true
-  end
-
-  it "Should touch out at journey end" do
-    oystercard = Oystercard.new
-    oystercard.top_up(10)
-    oystercard.touch_in(station)
-    oystercard.touch_out
-    expect(oystercard.in_journey?).to be nil
-  end
-
-  it 'should prevent travelling with balance less than £1' do
+context '#touch_in' do
+  it 'raises error when not enough money' do
     fare = Oystercard::FARE
     balance = Oystercard::BALANCE
     oystercard = Oystercard.new
-    expect { oystercard.touch_in(station) }.to raise_error("Not enough money on card! Your balance is £#{balance}")
+
+    expect { oystercard.touch_in(in_station) }.to raise_error("Not enough money on card! Your balance is £#{balance}")
   end
 
-  it 'should deduct fare upon touch out' do
-    fare = Oystercard::FARE
-    oystercard = Oystercard.new
-    oystercard.top_up(10)
-    oystercard.touch_in(station)
-    expect{oystercard.touch_out}.to change{oystercard.balance}.by(-fare)
-  end
+  it 'returns station on touch in' do
+   oystercard = Oystercard.new
+   oystercard.top_up(10)
+   oystercard.touch_in(in_station)
 
- it 'Remembers the entry station upon touch in' do
-  oystercard = Oystercard.new
-  oystercard.top_up(10)
-  oystercard.touch_in(station)
-  expect(oystercard.entry_station).to eq(station)
+
+   expect(journey.start_journey(in_station)).to eq true
+ end
 end
 
-it 'should set entry_station to nil upon touch out' do
-  oystercard = Oystercard.new
-  oystercard.top_up(10)
-  oystercard.touch_in(station)
-  oystercard.touch_out
-  expect(oystercard.entry_station).to eq(nil)
-end
+ context '#touch_out' do
+   it 'should deduct fare upon touch out' do
+     oystercard = Oystercard.new
+     oystercard.top_up(10)
+     oystercard.touch_in(in_station)
+
+     allow(journey).to receive(:calculate_fare) {1}
+     expect{oystercard.touch_out(out_station)}.to change{oystercard.balance}.by(-1 )
+   end
+
+   it 'stores one journey into journey_log' do
+     oystercard = Oystercard.new
+     oystercard.top_up(10)
+     oystercard.touch_in(in_station)
+     oystercard.touch_out(out_station)
+
+     expect(oystercard.journey_log).to eq ([{entry: in_station, exit: out_station }])
+   end
+ end
+
 end
