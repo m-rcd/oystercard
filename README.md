@@ -58,6 +58,7 @@ Getting started
 1. Create RSpec conventional files: `rspec --init`
 
 How my app would look like from a perspective user:
+---
 
 ```rb
 [1] pry(main)> require './lib/journey.rb'
