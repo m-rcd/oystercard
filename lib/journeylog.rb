@@ -22,4 +22,5 @@ class JourneyLog
   def process_fare
     journey.calculate_fare(entry_point.zone, exit_point.zone)
   end
+
 end
