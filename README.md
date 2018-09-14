@@ -57,7 +57,7 @@ Getting started
 1. Create Gemfile
 1. Create RSpec conventional files: `rspec --init`
 
-How my app would look like from a perspective user:
+How my app would look like from a user perspective:
 ---
 
 ```rb
