@@ -2,7 +2,7 @@ class Oystercard
     BALANCE = 0
     MAX_BALANCE = 90
     FARE = 1
-    attr_reader :balance, :journeylog, :max_balance
+    attr_reader :balance, :journeylog
 
   def initialize(balance = BALANCE, journeylog = JourneyLog.new)
     @balance = balance
@@ -32,7 +32,7 @@ class Oystercard
   end
 
   private
-  attr_reader :in_use
+  attr_reader :in_use, :max_balance
 
   def deduct(amount)
     @balance -= amount
