@@ -43,7 +43,7 @@ class Oystercard
   end
 
   def in_use?
-    @in_use
+    in_use
   end
 
   def balance_writer
